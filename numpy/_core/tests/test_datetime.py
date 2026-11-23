@@ -2759,6 +2759,28 @@ class TestDateTime:
         assert_equal(np.busday_offset(np.datetime64('NaT', 'D'), 1, roll='preceding'),
                      np.datetime64('NaT', 'D'))
 
+    def test_datetime_busday_offset_modified_roll_cross_year(self):
+        # The 'modified' roll modes must switch direction when the
+        # nearest business day lies in a different month.  The month
+        # comparison has to include the year, otherwise a holiday span
+        # that crosses New Year (e.g. Jan -> next Jan) is mistaken for
+        # staying within the same month.
+        holidays = np.arange('2024-01-08', '2025-01-08',
+                            dtype='datetime64[D]')
+        assert_equal(
+            np.busday_offset('2024-01-08', 0, roll='modifiedfollowing',
+                            holidays=holidays),
+            np.datetime64('2024-01-05'))
+
+        # A December date whose following business day is in January
+        # must still roll back to the preceding December business day.
+        jan_holidays = np.arange('2022-01-01', '2022-01-04',
+                                dtype='datetime64[D]')
+        assert_equal(
+            np.busday_offset('2021-12-31', 0, roll='modifiedfollowing',
+                            holidays=jan_holidays),
+            np.datetime64('2021-12-30'))
+
     def test_datetime_busdaycalendar(self):
         # Check that it removes NaT, duplicates, and weekends
         # and sorts the result.

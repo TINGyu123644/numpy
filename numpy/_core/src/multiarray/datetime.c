@@ -207,13 +207,15 @@ days_to_yearsdays(npy_int64 *days_)
     return year + 2000;
 }
 
-/* Extracts the month number from a 'datetime64[D]' value */
+/* Extracts the absolute month number (including the year) from a
+ * 'datetime64[D]' value, so that comparing two values detects month
+ * boundaries crossed across a year boundary as well. */
 NPY_NO_EXPORT int
 days_to_month_number(npy_datetime days)
 {
     npy_datetimestruct dts;
     set_datetimestruct_days(days, &dts);
-    return dts.month;
+    return 12 * (dts.year - 1970) + (dts.month - 1);
 }
 
 /*

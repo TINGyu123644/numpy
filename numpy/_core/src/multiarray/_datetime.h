@@ -53,8 +53,9 @@ NPY_NO_EXPORT PyArray_Descr *
 datetime_type_promotion(PyArray_Descr *type1, PyArray_Descr *type2);
 
 /*
- * Extracts the month number, within the current year,
- * from a 'datetime64[D]' value. January is 1, etc.
+ * Extracts the absolute month number (including the year) from a
+ * 'datetime64[D]' value. This is used to detect crossed month
+ * boundaries, including those that cross a year boundary.
  */
 NPY_NO_EXPORT int
 days_to_month_number(npy_datetime days);
